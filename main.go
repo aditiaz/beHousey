@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"housey/database"
 	"housey/pkg/mysql"
+	"os"
 
 	"housey/routes"
 	"log"
 	"net/http"
-
-	// "os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -23,8 +22,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	
 
 	// Database
 	mysql.DatabaseInit()
@@ -43,10 +40,11 @@ func main() {
 	var AllowedHeaders = handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	var AllowedMethods = handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS", "PATCH", "DELETE"})
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
-
+	port := os.Getenv("PORT")
 	// Embed the setup allowed in 2 parameter on this below code ...
 	fmt.Println("Server is running on 5000")
-	http.ListenAndServe("localhost:5000", handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	// http.ListenAndServe("localhost:5000", handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 
 	// handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }

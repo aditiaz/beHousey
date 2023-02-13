@@ -9,9 +9,9 @@ import (
 )
 
 func UploadFile(next http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		
-		file,_,err := r.FormFile("image")
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		file, _, err := r.FormFile("image")
 
 		if err != nil {
 			fmt.Println(err)
@@ -25,13 +25,13 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		r.ParseMultipartForm(MAX_UPLOAD_SIZE)
 		if r.ContentLength > MAX_UPLOAD_SIZE {
 			w.WriteHeader(http.StatusBadRequest)
-			response := Result{Code: http.StatusBadRequest,Message: "Max size is 10Mb"}
+			response := Result{Code: http.StatusBadRequest, Message: "Max size is 10Mb"}
 			json.NewEncoder(w).Encode(response)
 			return
 		}
 
 		// temporary file
-		tempFile,err := ioutil.TempFile("uploads", "image-*.png")
+		tempFile, err := ioutil.TempFile("uploads", "image-*.png")
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("upload path error")
@@ -39,8 +39,8 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		defer tempFile.Close()
-		
-		fileBytes,err := ioutil.ReadAll(file)
+
+		fileBytes, err := ioutil.ReadAll(file)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -48,9 +48,8 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		filename := data[8:]
 
-		ctx := context.WithValue(r.Context(),"dataFile",filename)
-		next.ServeHTTP(w,r.WithContext(ctx))
+		ctx := context.WithValue(r.Context(), "dataFile", data)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
