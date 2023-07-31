@@ -4,8 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+
+	// "io/ioutil"
 	"net/http"
+	"os"
+
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
 func UploadFile(next http.HandlerFunc) http.HandlerFunc {
@@ -30,26 +35,25 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// temporary file
-		tempFile, err := ioutil.TempFile("uploads", "image-*.png")
+		var ctx = context.Background()
+		var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+		var API_KEY = os.Getenv("API_KEY")
+		var API_SECRET = os.Getenv("API_SECRET")
+		// get image filepath
+		// dataContex := r.Context().Value("dataFile")
+		// filepath := dataContex.(string)
+		// Add your Cloudinary credentials ...
+		cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+		// Upload file to Cloudinary ...
+		resp, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{Folder: "uploads"})
 		if err != nil {
-			fmt.Println(err)
-			fmt.Println("upload path error")
-			json.NewEncoder(w).Encode(err)
-			return
-		}
-		defer tempFile.Close()
-
-		fileBytes, err := ioutil.ReadAll(file)
-		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Error())
 		}
 
-		tempFile.Write(fileBytes)
+		// data := tempFile.Name()
 
-		data := tempFile.Name()
-
-		ctx := context.WithValue(r.Context(), "dataFile", data)
+		ctx = context.WithValue(r.Context(), "dataFile", resp.SecureURL)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

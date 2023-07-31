@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"housey/routes"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/handlers"
@@ -17,7 +18,10 @@ import (
 func main() {
 
 	// godotenv
-	godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	// Database
 	mysql.DatabaseInit()

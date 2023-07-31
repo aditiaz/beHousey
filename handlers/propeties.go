@@ -1,22 +1,15 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	propertiesdto "housey/dto/properties"
 	dto "housey/dto/result"
 	"housey/models"
 	"housey/repositories"
 	"net/http"
-	"os"
 	"strconv"
 
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
-
-	// "github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
 	"gorm.io/datatypes"
 )
@@ -65,10 +58,7 @@ func (h *handlerProperty) GetProperty(w http.ResponseWriter, r *http.Request) {
 func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	// userId := int(userInfo["id"].( float64 ))
-	// userRole := string(userInfo["listAs"].(string))
-
+	filename := r.Context().Value("datafile").(string)
 	price, _ := strconv.Atoi(r.FormValue("price"))
 	bedroom, _ := strconv.Atoi(r.FormValue("bedroom"))
 	bathroom, _ := strconv.Atoi(r.FormValue("bathroom"))
@@ -84,7 +74,7 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Bathroom:      bathroom,
 		Sqf:           r.FormValue("sqf"),
 		Description:   r.FormValue("description"),
-		// Image: filename,
+		Image:         filename,
 		// User_Id: userId,
 	}
 
@@ -96,21 +86,21 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	var ctx = context.Background()
-	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	var API_KEY = os.Getenv("API_KEY")
-	var API_SECRET = os.Getenv("API_SECRET")
-	// get image filepath
-	dataContex := r.Context().Value("dataFile")
-	filepath := dataContex.(string)
-	// Add your Cloudinary credentials ...
-	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+	// var ctx = context.Background()
+	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	// var API_KEY = os.Getenv("API_KEY")
+	// var API_SECRET = os.Getenv("API_SECRET")
+	// // get image filepath
+	// dataContex := r.Context().Value("dataFile")
+	// filepath := dataContex.(string)
+	// // Add your Cloudinary credentials ...
+	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
-	// Upload file to Cloudinary ...
-	resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "uploads"})
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	// // Upload file to Cloudinary ...
+	// resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "uploads"})
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
 
 	property := models.Property{
 		Name_Property: request.Name_Property,
@@ -123,7 +113,7 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Bathroom:      request.Bathroom,
 		Sqf:           request.Sqf,
 		Description:   request.Description,
-		Image:         resp.SecureURL,
+		Image:         filename,
 		// User_Id: request.User_Id,
 
 	}
