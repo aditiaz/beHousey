@@ -86,22 +86,6 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	// var ctx = context.Background()
-	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	// var API_KEY = os.Getenv("API_KEY")
-	// var API_SECRET = os.Getenv("API_SECRET")
-	// // get image filepath
-	// dataContex := r.Context().Value("dataFile")
-	// filepath := dataContex.(string)
-	// // Add your Cloudinary credentials ...
-	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
-
-	// // Upload file to Cloudinary ...
-	// resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "uploads"})
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
-
 	property := models.Property{
 		Name_Property: request.Name_Property,
 		City:          request.City,
