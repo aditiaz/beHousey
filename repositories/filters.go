@@ -20,12 +20,12 @@ func (r *repository) MultiFilter(params url.Values) ([]models.Property, error) {
 	var properties []models.Property
 
 	type_of_rent := params.Get("type_of_rent")
-	price, _ := strconv.ParseFloat(params.Get("price"), 64)
+	// price, _ := strconv.ParseFloat(params.Get("price"), 64)
 	bedroom, _ := strconv.Atoi(params.Get("bedroom"))
 	bathroom, _ := strconv.Atoi(params.Get("bathroom"))
-	amenities := params.Get("amenities")
+	// amenities := params.Get("amenities")
 
-	err := r.db.Where("type_rent = ? AND price < ? AND bedroom = ? AND bathroom = ? AND amenities = ?", type_of_rent, price, bedroom, bathroom, amenities).Find(&properties).Error
+	err := r.db.Where("type_rent = ?  AND bedroom = ? AND bathroom = ? ", type_of_rent, bedroom, bathroom).Find(&properties).Error
 
 	return properties, err
 
